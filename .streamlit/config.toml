@@ -3,43 +3,43 @@ enableStaticServing = true
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "static/Inter_18pt-Regular.ttf"
+url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
 style = "normal"
 weight = 400
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "static/Inter_18pt-Medium.ttf"
+url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
 style = "normal"
 weight = 500
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "static/Inter_18pt-SemiBold.ttf"
+url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
 style = "normal"
 weight = 600
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "static/Inter_18pt-Bold.ttf"
+url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
 style = "normal"
 weight = 700
 
 [[theme.fontFaces]]
 family = "JetBrainsMono"
-url = "static/JetBrainsMono-Regular.ttf"
+url = "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEnyS4rq1ISnVBV_-QrSfOhI2tcw5w.woff2"
 style = "normal"
 weight = 400
 
 [[theme.fontFaces]]
 family = "JetBrainsMono"
-url = "static/JetBrainsMono-Medium.ttf"
+url = "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEnyS4rq1ISnVBV_-QrSfOhI2tcw5w.woff2"
 style = "normal"
 weight = 500
 
 [[theme.fontFaces]]
 family = "JetBrainsMono"
-url = "static/JetBrainsMono-Bold.ttf"
+url = "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEnyS4rq1ISnVBV_-QrSfOhI2tcw5w.woff2"
 style = "normal"
 weight = 700
 
