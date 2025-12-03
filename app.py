@@ -240,7 +240,7 @@ all_training_features = numerical_features + encoded_feature_names_from_dummy
 # ============================================================================
 
 # Title and Description
-st.markdown("# :material/timeline: DPWH Flood Control Project Delay Prediction")
+st.markdown("# :material/timeline: DPWH Flood Control Project Delay Predictor")
 st.markdown("""
 <div class="info-card">
     <p class="info-card-text">
