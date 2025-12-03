@@ -104,7 +104,9 @@ def engineer_features(user_data: dict, avg_by_region: dict, avg_by_work_type: di
         try:
             start = pd.to_datetime(user_data['StartDate'])
             end = pd.to_datetime(user_data['ActualCompletionDate'])
-            engineered_data['ProjectDuration'] = float((end - start).days)
+            duration = float((end - start).days)
+            # Ensure duration is not negative (take absolute value if dates are reversed)
+            engineered_data['ProjectDuration'] = abs(duration)
         except:
             engineered_data['ProjectDuration'] = 150.0  # Default fallback
     
@@ -399,27 +401,15 @@ if selected_tab == "Batch Upload":
                     prediction = model.predict(X_new)
                     prediction_proba = model.predict_proba(X_new)
                     
-                    # Get feature importances from the model
-                    feature_importance = model.feature_importances_
-                    feature_importance_df = pd.DataFrame({
-                        'feature': all_training_features,
-                        'importance': feature_importance
-                    }).sort_values('importance', ascending=False)
-                    
-                    # Get top 2 important features
-                    top_2_features = feature_importance_df.head(2)['feature'].tolist()
-                    top_2_importance = feature_importance_df.head(2)['importance'].tolist()
-                    
-                    # Create feature importance string for display
-                    top_features_str = ", ".join([
-                        f"{feat.replace('_', ' ')}" 
-                        for feat in top_2_features
-                    ])
+                    # Get project duration and contract cost
+                    project_duration = input_data_dict.get('ProjectDuration', 0)
+                    contract_cost = row['ContractCost']
                     
                     # Store result
                     predictions_list.append({
                         'Project Name': row['ProjectName'],
-                        'Top Important Features': top_features_str,
+                        'Project Duration (days)': f"{int(project_duration)}",
+                        'Contract Cost': f"₱{contract_cost:,.2f}",
                         'Status': 'On Time' if prediction[0] == 1 else 'Delayed',
                         'Confidence': f"{max(prediction_proba[0]) * 100:.1f}%"
                     })
