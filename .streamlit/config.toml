@@ -3,43 +3,43 @@ enableStaticServing = true
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
+url = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 style = "normal"
 weight = 400
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
+url = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 style = "normal"
 weight = 500
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
+url = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 style = "normal"
 weight = 600
 
 [[theme.fontFaces]]
 family = "Inter"
-url = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMV7hP.woff2"
+url = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 style = "normal"
 weight = 700
 
 [[theme.fontFaces]]
 family = "JetBrainsMono"
-url = "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEnyS4rq1ISnVBV_-QrSfOhI2tcw5w.woff2"
+url = "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
 style = "normal"
 weight = 400
 
 [[theme.fontFaces]]
 family = "JetBrainsMono"
-url = "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEnyS4rq1ISnVBV_-QrSfOhI2tcw5w.woff2"
+url = "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
 style = "normal"
 weight = 500
 
 [[theme.fontFaces]]
 family = "JetBrainsMono"
-url = "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEnyS4rq1ISnVBV_-QrSfOhI2tcw5w.woff2"
+url = "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
 style = "normal"
 weight = 700
 
