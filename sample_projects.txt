@@ -1,0 +1,45 @@
+================================================================================
+PROJECT 1: Mogpog Shore Protection
+================================================================================
+ProjectName: Construction of Mogpog Shore Protection/Boulevard, Sitio Ulong, Mogpog, Marinduque
+ApprovedBudgetForContract: 192999999.02
+ContractCost: 192995358.25
+StartDate: 2023-02-11
+ActualCompletionDate: 2024-04-25
+ContractorCount: 2
+FundingYear: 2023
+ProjectLatitude: 13.4862
+ProjectLongitude: 121.839
+ProvincialCapitalLatitude: 13.4463
+ProvincialCapitalLongitude: 121.84
+MainIsland: Luzon
+Region: Region IV-B
+Province: Marinduque
+LegislativeDistrict: MARINDUQUE (LEGISLATIVE DISTRICT)
+Municipality: MOGPOG (MARINDUQUE)
+DistrictEngineeringOffice: Marinduque District Engineering Office
+TypeOfWork: Construction of Revetment
+ProvincialCapital: Boac
+
+================================================================================
+PROJECT 2: Bongabong River Dike
+================================================================================
+ProjectName: Construction of Road Dike/Esplanade along Bongabong River, Anilao-Mina de Oro Section, Bongabong, Oriental Mindoro
+ApprovedBudgetForContract: 217124999.91
+ContractCost: 217123307
+StartDate: 2023-02-11
+ActualCompletionDate: 2023-12-15
+ContractorCount: 1
+FundingYear: 2023
+ProjectLatitude: 12.7156
+ProjectLongitude: 121.5048
+ProvincialCapitalLatitude: 13.414
+ProvincialCapitalLongitude: 121.179
+MainIsland: Luzon
+Region: Region IV-B
+Province: Oriental Mindoro
+LegislativeDistrict: ORIENTAL MINDORO (SECOND LEGISLATIVE DISTRICT)
+Municipality: BONGABONG (ORIENTAL MINDORO)
+DistrictEngineeringOffice: Southern Mindoro District Engineering Office
+TypeOfWork: Construction of Dike
+ProvincialCapital: Calapan City

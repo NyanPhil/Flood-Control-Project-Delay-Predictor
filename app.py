@@ -23,6 +23,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Initialize session state for tab selection
+if 'selected_tab' not in st.session_state:
+    st.session_state.selected_tab = 0
+
 
 # ============================================================================
 # LOAD MODEL & PREPROCESSORS
@@ -38,6 +42,87 @@ def load_model_and_preprocessors():
 
 
 model, imputer_numeric, encoder = load_model_and_preprocessors()
+
+
+# ============================================================================
+# FEATURE ENGINEERING FUNCTIONS
+# ============================================================================
+
+@st.cache_data
+def load_and_process_training_data():
+    """Load the actual training data to compute averages for engineering features."""
+    try:
+        df = pd.read_csv('data/dpwh_flood_control_projects.csv')
+        
+        # Calculate ProjectDuration
+        df['StartDate'] = pd.to_datetime(df['StartDate'])
+        df['ActualCompletionDate'] = pd.to_datetime(df['ActualCompletionDate'])
+        df['ProjectDuration'] = (df['ActualCompletionDate'] - df['StartDate']).dt.days
+        
+        # Calculate average durations by Region and TypeOfWork
+        avg_by_region = df.groupby('Region')['ProjectDuration'].mean().to_dict()
+        avg_by_work_type = df.groupby('TypeOfWork')['ProjectDuration'].mean().to_dict()
+        
+        return avg_by_region, avg_by_work_type
+    except Exception as e:
+        st.warning(f"Could not load training data for feature engineering: {str(e)}")
+        return {}, {}
+
+
+avg_duration_by_region, avg_duration_by_work_type = load_and_process_training_data()
+
+
+def engineer_features(user_data: dict, avg_by_region: dict, avg_by_work_type: dict, global_avg: float = 250.0) -> dict:
+    """
+    Engineer the missing features from raw user inputs.
+    
+    Parameters:
+    user_data: Dictionary with raw user inputs
+    avg_by_region: Dictionary of average durations by region
+    avg_by_work_type: Dictionary of average durations by work type
+    global_avg: Global average duration fallback
+    
+    Returns:
+    Dictionary with all features including engineered ones
+    """
+    engineered_data = user_data.copy()
+    
+    # Ensure all numerical fields are properly converted to float
+    numerical_fields = ['ApprovedBudgetForContract', 'ContractCost', 'ContractorCount', 
+                        'FundingYear', 'ProjectLatitude', 'ProjectLongitude',
+                        'ProvincialCapitalLatitude', 'ProvincialCapitalLongitude']
+    
+    for field in numerical_fields:
+        if field in engineered_data:
+            try:
+                engineered_data[field] = float(engineered_data[field])
+            except (ValueError, TypeError):
+                engineered_data[field] = None
+    
+    # Engineer ProjectDuration from dates
+    if 'StartDate' in user_data and 'ActualCompletionDate' in user_data:
+        try:
+            start = pd.to_datetime(user_data['StartDate'])
+            end = pd.to_datetime(user_data['ActualCompletionDate'])
+            engineered_data['ProjectDuration'] = float((end - start).days)
+        except:
+            engineered_data['ProjectDuration'] = 150.0  # Default fallback
+    
+    # Engineer AverageDuration_Region
+    region = user_data.get('Region', '')
+    if region in avg_by_region:
+        engineered_data['AverageDuration_Region'] = float(avg_by_region[region])
+    else:
+        engineered_data['AverageDuration_Region'] = float(global_avg)
+    
+    # Engineer AverageDuration_TypeOfWork
+    work_type = user_data.get('TypeOfWork', '')
+    if work_type in avg_by_work_type:
+        engineered_data['AverageDuration_TypeOfWork'] = float(avg_by_work_type[work_type])
+    else:
+        engineered_data['AverageDuration_TypeOfWork'] = float(global_avg)
+    
+    return engineered_data
 
 
 # ============================================================================
@@ -155,7 +240,7 @@ all_training_features = numerical_features + encoded_feature_names_from_dummy
 # ============================================================================
 
 # Title and Description
-st.markdown("# :material/timeline: DPWH Flood Control Project Prediction")
+st.markdown("# :material/timeline: DPWH Flood Control Project Delay Prediction")
 st.markdown("""
 <div class="info-card">
     <p class="info-card-text">
@@ -165,272 +250,496 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Create tabs for single and batch predictions
+# Check if user just uploaded a file - if so, stay on batch upload tab
+default_tab = "Batch Upload" if st.session_state.get('batch_uploaded', False) else "Single Project"
 
-# ============================================================================
-# INPUT FORMS - NUMERICAL FEATURES
-# ============================================================================
+selected_tab = st.radio(
+    "Navigation", 
+    ["Single Project", "Batch Upload"], 
+    horizontal=True, 
+    label_visibility="collapsed",
+    index=0 if default_tab == "Single Project" else 1
+)
 
-st.markdown("## :material/calculate: Numerical Features")
+# Reset the flag after using it
+if selected_tab == "Single Project":
+    st.session_state.batch_uploaded = False
 
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    with st.container(border=True):
-        st.subheader("Budget & Cost", divider=False)
-        approved_budget = st.number_input(
-            'Approved Budget (PHP)', 
-            min_value=0.0, 
-            value=50000000.0, 
-            step=1000000.0,
-            help="Total approved contract budget in Philippine Pesos"
-        )
-        contract_cost = st.number_input(
-            'Contract Cost (PHP)', 
-            min_value=0.0, 
-            value=48000000.0, 
-            step=1000000.0,
-            help="Actual contract cost in Philippine Pesos"
-        )
-        project_duration = st.number_input(
-            'Duration (days)', 
-            min_value=0, 
-            value=150, 
-            step=10,
-            help="Expected project duration in days"
-        )
-
-with col2:
-    with st.container(border=True):
-        st.subheader("Project Details", divider=False)
-        contractor_count = st.selectbox(
-            'Number of Contractors', 
-            options=[1, 2, 3], 
-            index=0,
-            help="Number of contractors involved"
-        )
-        funding_year = st.selectbox(
-            'Funding Year', 
-            options=list(range(2018, 2026)), 
-            index=6,
-            help="Year the project was funded"
-        )
-        project_latitude = st.number_input(
-            'Project Latitude', 
-            min_value=5.0, 
-            max_value=20.0, 
-            value=14.5, 
-            format="%.6f",
-            help="Geographic latitude of project"
-        )
-
-with col3:
-    with st.container(border=True):
-        st.subheader("Location Data", divider=False)
-        project_longitude = st.number_input(
-            'Project Longitude', 
-            min_value=117.0, 
-            max_value=127.0, 
-            value=121.0, 
-            format="%.6f",
-            help="Geographic longitude of project"
-        )
-        avg_duration_region = st.number_input(
-            'Avg Duration (Region)', 
-            min_value=0.0, 
-            value=250.0,
-            help="Average project duration in this region"
-        )
-        avg_duration_typeofwork = st.number_input(
-            'Avg Duration (Work Type)', 
-            min_value=0.0, 
-            value=250.0,
-            help="Average duration for this type of work"
-        )
-        prov_capital_latitude = st.number_input(
-            'Capital Latitude', 
-            min_value=5.0, 
-            max_value=20.0, 
-            value=14.0, 
-            format="%.6f",
-            help="Latitude of provincial capital"
-        )
-        prov_capital_longitude = st.number_input(
-            'Capital Longitude', 
-            min_value=117.0, 
-            max_value=127.0, 
-            value=121.0, 
-            format="%.6f",
-            help="Longitude of provincial capital"
-        )
-
-
-# ============================================================================
-# INPUT FORMS - CATEGORICAL FEATURES
-# ============================================================================
-
-st.markdown("## :material/category: Categorical Features")
-
-col_cat1, col_cat2 = st.columns(2)
-
-with col_cat1:
-    with st.container(border=True):
-        st.subheader("Geographic", divider=False)
-        input_mainisland = st.selectbox(
-            'Main Island', 
-            encoder.categories_[0],
-            help="Primary island where project is located"
-        )
-        input_region = st.selectbox(
-            'Region', 
-            encoder.categories_[1],
-            help="Regional administrative division"
-        )
-        input_province = st.selectbox(
-            'Province', 
-            encoder.categories_[2],
-            help="Provincial location"
-        )
-
-with col_cat2:
-    with st.container(border=True):
-        st.subheader("Administrative", divider=False)
-        input_legislativedistrict = st.selectbox(
-            'Legislative District', 
-            encoder.categories_[3],
-            help="Legislative district"
-        )
-        input_municipality = st.selectbox(
-            'Municipality', 
-            encoder.categories_[4],
-            help="Municipal location"
-        )
-        input_deo = st.selectbox(
-            'District Engineering Office', 
-            encoder.categories_[5],
-            help="Responsible engineering office"
-        )
-
-col_cat3 = st.columns(1)[0]
-with col_cat3:
-    with st.container(border=True):
-        st.subheader("Project Type", divider=False)
-        input_typeofwork = st.selectbox(
-            'Type Of Work', 
-            encoder.categories_[6],
-            help="Category of flood control work"
-        )
-        input_provcapital = st.selectbox(
-            'Provincial Capital', 
-            encoder.categories_[7],
-            help="Nearest provincial capital"
-        )
-
-
-# ============================================================================
-# PREDICTION
-# ============================================================================
-
-col_predict_left, col_predict_center, col_predict_right = st.columns([1, 1, 1])
-
-with col_predict_center:
-    predict_button = st.button(
-        ':material/smart_toy: Make Prediction',
-        use_container_width=True,
-        type="primary",
-        help="Click to predict project completion status"
+if selected_tab == "Batch Upload":
+    st.markdown("### :material/upload_file: Upload Project List")
+    st.markdown("Upload a CSV file with project data to conduct predictions on multiple projects at once.")
+    
+    uploaded_file = st.file_uploader(
+        "Choose a CSV file",
+        type="csv",
+        help="CSV should contain columns matching the input features"
     )
+    
+    if uploaded_file is not None:
+        # Store that we're on batch upload tab
+        st.session_state.batch_uploaded = True
+        try:
+            # Read the CSV file
+            df_uploaded = pd.read_csv(uploaded_file)
 
+            # Defensive conversion: replace 'nan' strings and empty strings with pd.NA
+            df_uploaded.replace({'nan': pd.NA, '': pd.NA}, inplace=True)
 
-if predict_button:
-    # Create input dictionary
-    input_data_dict = {
-        'ApprovedBudgetForContract': approved_budget,
-        'ContractCost': contract_cost,
-        'ProjectDuration': float(project_duration),
-        'AverageDuration_Region': avg_duration_region,
-        'AverageDuration_TypeOfWork': avg_duration_typeofwork,
-        'ContractorCount': float(contractor_count),
-        'FundingYear': float(funding_year),
-        'ProjectLatitude': project_latitude,
-        'ProjectLongitude': project_longitude,
-        'ProvincialCapitalLatitude': prov_capital_latitude,
-        'ProvincialCapitalLongitude': prov_capital_longitude,
-        'MainIsland': input_mainisland,
-        'Region': input_region,
-        'Province': input_province,
-        'LegislativeDistrict': input_legislativedistrict,
-        'Municipality': input_municipality,
-        'DistrictEngineeringOffice': input_deo,
-        'TypeOfWork': input_typeofwork,
-        'ProvincialCapital': input_provcapital
-    }
+            # List of all numeric columns expected in raw input
+            numeric_cols = [
+                'ApprovedBudgetForContract', 'ContractCost', 'ContractorCount', 
+                'FundingYear', 'ProjectLatitude', 'ProjectLongitude',
+                'ProvincialCapitalLatitude', 'ProvincialCapitalLongitude'
+            ]
+            for col in numeric_cols:
+                if col in df_uploaded.columns:
+                    # Remove whitespace and ensure proper conversion
+                    df_uploaded[col] = df_uploaded[col].astype(str).str.strip().replace({'nan': pd.NA, '': pd.NA})
+                    df_uploaded[col] = pd.to_numeric(df_uploaded[col], errors='coerce')
+            # After conversion, check for any remaining string types and coerce
+            for col in numeric_cols:
+                if col in df_uploaded.columns and df_uploaded[col].dtype == object:
+                    df_uploaded[col] = pd.to_numeric(df_uploaded[col], errors='coerce')
 
-    # Convert to DataFrame
-    new_df = pd.DataFrame([input_data_dict])
-
-    # Preprocess: Impute numerical features
-    new_df[numerical_features] = imputer_numeric.transform(new_df[numerical_features])
-
-    # Preprocess: One-hot encode categorical features
-    encoded_new_features = encoder.transform(new_df[categorical_features])
-    encoded_new_feature_names = encoder.get_feature_names_out(categorical_features)
-    encoded_new_df = pd.DataFrame(
-        encoded_new_features, 
-        columns=encoded_new_feature_names, 
-        index=new_df.index
-    )
-
-    # Combine numerical and encoded features
-    X_new = pd.concat([new_df[numerical_features], encoded_new_df], axis=1)
-
-    # Align columns with training data
-    missing_cols = set(all_training_features) - set(X_new.columns)
-    for col in missing_cols:
-        X_new[col] = 0
-
-    X_new = X_new[all_training_features]
-
-    # Make prediction
-    prediction = model.predict(X_new)
-    prediction_proba = model.predict_proba(X_new)
-
-    # Display results
-    st.markdown("## :material/task_alt: Prediction Results")
-
-    if prediction[0] == 1:
-        # On-time prediction
-        confidence = prediction_proba[0][1] * 100
-        st.markdown(f"""
-        <div class="result-card result-success">
-            <p class="result-title">ON TIME</p>
-            <p class="result-subtitle">Project will likely complete on schedule</p>
-            <p class="result-confidence"><strong>Confidence:</strong> {confidence:.1f}%</p>
-        </div>
-        """, unsafe_allow_html=True)
+            # Validate that required raw columns exist
+            required_raw_cols = [
+                'ProjectName', 'ApprovedBudgetForContract', 'ContractCost',
+                'StartDate', 'ActualCompletionDate', 'ContractorCount', 'FundingYear',
+                'ProjectLatitude', 'ProjectLongitude', 
+                'ProvincialCapitalLatitude', 'ProvincialCapitalLongitude',
+                'MainIsland', 'Region', 'Province', 'LegislativeDistrict',
+                'Municipality', 'DistrictEngineeringOffice', 'TypeOfWork', 'ProvincialCapital'
+            ]
+            missing_cols = [col for col in required_raw_cols if col not in df_uploaded.columns]
+            
+            if missing_cols:
+                st.error(f"Missing required columns: {', '.join(missing_cols)}")
+            else:
+                st.success(f"✓ File loaded successfully with {len(df_uploaded)} projects")
+                
+                # Convert date columns
+                df_uploaded['StartDate'] = pd.to_datetime(df_uploaded['StartDate'])
+                df_uploaded['ActualCompletionDate'] = pd.to_datetime(df_uploaded['ActualCompletionDate'])
+                
+                # Convert all numeric columns to proper types
+                numeric_cols = ['ApprovedBudgetForContract', 'ContractCost', 'ContractorCount', 
+                               'FundingYear', 'ProjectLatitude', 'ProjectLongitude',
+                               'ProvincialCapitalLatitude', 'ProvincialCapitalLongitude']
+                for col in numeric_cols:
+                    if col in df_uploaded.columns:
+                        df_uploaded[col] = pd.to_numeric(df_uploaded[col], errors='coerce')
+                
+                # Prepare predictions for all projects
+                predictions_list = []
+                
+                for idx, row in df_uploaded.iterrows():
+                    # Create raw input data - ensure all numeric values are float
+                    raw_input_data = {
+                        'ApprovedBudgetForContract': float(row['ApprovedBudgetForContract']),
+                        'ContractCost': float(row['ContractCost']),
+                        'StartDate': row['StartDate'],
+                        'ActualCompletionDate': row['ActualCompletionDate'],
+                        'ContractorCount': float(row['ContractorCount']),
+                        'FundingYear': float(row['FundingYear']),
+                        'ProjectLatitude': float(row['ProjectLatitude']),
+                        'ProjectLongitude': float(row['ProjectLongitude']),
+                        'ProvincialCapitalLatitude': float(row['ProvincialCapitalLatitude']),
+                        'ProvincialCapitalLongitude': float(row['ProvincialCapitalLongitude']),
+                        'MainIsland': row['MainIsland'],
+                        'Region': row['Region'],
+                        'Province': row['Province'],
+                        'LegislativeDistrict': row['LegislativeDistrict'],
+                        'Municipality': row['Municipality'],
+                        'DistrictEngineeringOffice': row['DistrictEngineeringOffice'],
+                        'TypeOfWork': row['TypeOfWork'],
+                        'ProvincialCapital': row['ProvincialCapital']
+                    }
+                    
+                    # Engineer missing features
+                    input_data_dict = engineer_features(raw_input_data, avg_duration_by_region, avg_duration_by_work_type)
+                    
+                    # Convert to DataFrame
+                    new_df = pd.DataFrame([input_data_dict])
+                    
+                    # Ensure all numerical features are numeric type and handle NaN strings
+                    for num_feat in numerical_features:
+                        if num_feat in new_df.columns:
+                            try:
+                                # Replace 'nan' strings with actual NaN
+                                if isinstance(new_df[num_feat].iloc[0], str):
+                                    new_df[num_feat] = new_df[num_feat].replace('nan', pd.NA)
+                                new_df[num_feat] = pd.to_numeric(new_df[num_feat], errors='coerce')
+                            except:
+                                pass
+                    
+                    # Preprocess: Impute numerical features
+                    new_df[numerical_features] = imputer_numeric.transform(new_df[numerical_features])
+                    
+                    # Preprocess: One-hot encode categorical features
+                    encoded_new_features = encoder.transform(new_df[categorical_features])
+                    encoded_new_feature_names = encoder.get_feature_names_out(categorical_features)
+                    encoded_new_df = pd.DataFrame(
+                        encoded_new_features, 
+                        columns=encoded_new_feature_names, 
+                        index=new_df.index
+                    )
+                    
+                    # Combine numerical and encoded features
+                    X_new = pd.concat([new_df[numerical_features], encoded_new_df], axis=1)
+                    
+                    # Align columns with training data
+                    missing_cols = set(all_training_features) - set(X_new.columns)
+                    for col in missing_cols:
+                        X_new[col] = 0
+                    
+                    X_new = X_new[all_training_features]
+                    
+                    # Make prediction
+                    prediction = model.predict(X_new)
+                    prediction_proba = model.predict_proba(X_new)
+                    
+                    # Get feature importances from the model
+                    feature_importance = model.feature_importances_
+                    feature_importance_df = pd.DataFrame({
+                        'feature': all_training_features,
+                        'importance': feature_importance
+                    }).sort_values('importance', ascending=False)
+                    
+                    # Get top 2 important features
+                    top_2_features = feature_importance_df.head(2)['feature'].tolist()
+                    top_2_importance = feature_importance_df.head(2)['importance'].tolist()
+                    
+                    # Create feature importance string for display
+                    top_features_str = ", ".join([
+                        f"{feat.replace('_', ' ')}" 
+                        for feat in top_2_features
+                    ])
+                    
+                    # Store result
+                    predictions_list.append({
+                        'Project Name': row['ProjectName'],
+                        'Top Important Features': top_features_str,
+                        'Status': 'On Time' if prediction[0] == 1 else 'Delayed',
+                        'Confidence': f"{max(prediction_proba[0]) * 100:.1f}%"
+                    })
+                
+                # Display results as table
+                results_df = pd.DataFrame(predictions_list)
+                
+                st.markdown("### Prediction Results")
+                
+                # Color coding for status
+                def color_status(val):
+                    if val == 'On Time':
+                        return 'background-color: #1a3a2a'
+                    else:
+                        return 'background-color: #3a1a1a'
+                
+                styled_df = results_df.style.map(color_status, subset=['Status'])
+                st.dataframe(styled_df, use_container_width=True, hide_index=True)
+                
+                # Download button
+                csv_results = results_df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Results as CSV",
+                    data=csv_results,
+                    file_name="prediction_results.csv",
+                    mime="text/csv"
+                )
         
-        # Additional context
-        col_context_1, col_context_2 = st.columns(2)
-        with col_context_1:
-            st.success("✓ Project looks well-positioned for timely completion")
-        with col_context_2:
-            st.metric("Probability of On-Time Completion", f"{confidence:.1f}%")
-    else:
-        # Delayed prediction
-        confidence = prediction_proba[0][0] * 100
-        st.markdown(f"""
-        <div class="result-card result-delayed">
-            <p class="result-title">DELAYED</p>
-            <p class="result-subtitle">Project may face delays</p>
-            <p class="result-confidence"><strong>Confidence:</strong> {confidence:.1f}%</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Additional context
-        col_context_1, col_context_2 = st.columns(2)
-        with col_context_1:
-            st.warning("⚠ Project may experience delays - monitor closely")
-        with col_context_2:
-            st.metric("Probability of Delay", f"{confidence:.1f}%")
+        except Exception as e:
+            st.error(f"Error processing file: {str(e)}")
+
+else:  # Single Project tab
+
+    # ============================================================================
+    # INPUT FORMS - NUMERICAL FEATURES
+    # ============================================================================
+
+    st.markdown("## :material/calculate: Raw Project Data")
+    st.caption("Enter the base project information. Duration and averages will be automatically calculated.")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        with st.container(border=True):
+            st.subheader("Budget & Cost", divider=False)
+            approved_budget = st.number_input(
+                'Approved Budget (PHP)', 
+                min_value=0.0, 
+                value=50000000.0, 
+                step=1000000.0,
+                help="Total approved contract budget in Philippine Pesos"
+            )
+            contract_cost = st.number_input(
+                'Contract Cost (PHP)', 
+                min_value=0.0, 
+                value=48000000.0, 
+                step=1000000.0,
+                help="Actual contract cost in Philippine Pesos"
+            )
+
+    with col2:
+        with st.container(border=True):
+            st.subheader("Project Timeline", divider=False)
+            start_date = st.date_input(
+                'Start Date',
+                value=pd.Timestamp('2022-01-01'),
+                help="Project start date"
+            )
+            completion_date = st.date_input(
+                'Completion Date',
+                value=pd.Timestamp('2022-06-30'),
+                help="Project completion date (for duration calculation)"
+            )
+
+    with col3:
+        with st.container(border=True):
+            st.subheader("Project Team", divider=False)
+            contractor_count = st.selectbox(
+                'Number of Contractors', 
+                options=[1, 2, 3], 
+                index=0,
+                help="Number of contractors involved"
+            )
+            funding_year = st.selectbox(
+                'Funding Year', 
+                options=list(range(2018, 2026)), 
+                index=6,
+                help="Year the project was funded"
+            )
+
+
+    # ============================================================================
+    # INPUT FORMS - LOCATION FEATURES
+    # ============================================================================
+
+    st.markdown("## :material/location_on: Project Location")
+
+    col_loc1, col_loc2 = st.columns(2)
+
+    with col_loc1:
+        with st.container(border=True):
+            st.subheader("Project Coordinates", divider=False)
+            project_latitude = st.number_input(
+                'Project Latitude', 
+                min_value=5.0, 
+                max_value=20.0, 
+                value=14.5, 
+                format="%.6f",
+                help="Geographic latitude of project location"
+            )
+            project_longitude = st.number_input(
+                'Project Longitude', 
+                min_value=117.0, 
+                max_value=127.0, 
+                value=121.0, 
+                format="%.6f",
+                help="Geographic longitude of project location"
+            )
+
+    with col_loc2:
+        with st.container(border=True):
+            st.subheader("Provincial Capital", divider=False)
+            prov_capital_latitude = st.number_input(
+                'Capital Latitude', 
+                min_value=5.0, 
+                max_value=20.0, 
+                value=14.0, 
+                format="%.6f",
+                help="Latitude of nearest provincial capital"
+            )
+            prov_capital_longitude = st.number_input(
+                'Capital Longitude', 
+                min_value=117.0, 
+                max_value=127.0, 
+                value=121.0, 
+                format="%.6f",
+                help="Longitude of nearest provincial capital"
+            )
+
+
+    # ============================================================================
+    # INPUT FORMS - CATEGORICAL FEATURES
+    # ============================================================================
+
+    st.markdown("## :material/category: Categorical Features")
+
+    col_cat1, col_cat2 = st.columns(2)
+
+    with col_cat1:
+        with st.container(border=True):
+            st.subheader("Geographic", divider=False)
+            input_mainisland = st.selectbox(
+                'Main Island', 
+                encoder.categories_[0],
+                help="Primary island where project is located"
+            )
+            input_region = st.selectbox(
+                'Region', 
+                encoder.categories_[1],
+                help="Regional administrative division"
+            )
+            input_province = st.selectbox(
+                'Province', 
+                encoder.categories_[2],
+                help="Provincial location"
+            )
+
+    with col_cat2:
+        with st.container(border=True):
+            st.subheader("Administrative", divider=False)
+            input_legislativedistrict = st.selectbox(
+                'Legislative District', 
+                encoder.categories_[3],
+                help="Legislative district"
+            )
+            input_municipality = st.selectbox(
+                'Municipality', 
+                encoder.categories_[4],
+                help="Municipal location"
+            )
+            input_deo = st.selectbox(
+                'District Engineering Office', 
+                encoder.categories_[5],
+                help="Responsible engineering office"
+            )
+
+    col_cat3 = st.columns(1)[0]
+    with col_cat3:
+        with st.container(border=True):
+            st.subheader("Project Type", divider=False)
+            input_typeofwork = st.selectbox(
+                'Type Of Work', 
+                encoder.categories_[6],
+                help="Category of flood control work"
+            )
+            input_provcapital = st.selectbox(
+                'Provincial Capital', 
+                encoder.categories_[7],
+                help="Nearest provincial capital"
+            )
+
+
+    # ============================================================================
+    # PREDICTION
+    # ============================================================================
+
+    col_predict_left, col_predict_center, col_predict_right = st.columns([1, 1, 1])
+
+    with col_predict_center:
+        predict_button = st.button(
+            ':material/smart_toy: Make Prediction',
+            use_container_width=True,
+            type="primary",
+            help="Click to predict project completion status"
+        )
+
+
+    if predict_button:
+        # Create raw input dictionary (only non-engineered features)
+        raw_input_data = {
+            'ApprovedBudgetForContract': approved_budget,
+            'ContractCost': contract_cost,
+            'StartDate': start_date,
+            'ActualCompletionDate': completion_date,
+            'ContractorCount': float(contractor_count),
+            'FundingYear': float(funding_year),
+            'ProjectLatitude': project_latitude,
+            'ProjectLongitude': project_longitude,
+            'ProvincialCapitalLatitude': prov_capital_latitude,
+            'ProvincialCapitalLongitude': prov_capital_longitude,
+            'MainIsland': input_mainisland,
+            'Region': input_region,
+            'Province': input_province,
+            'LegislativeDistrict': input_legislativedistrict,
+            'Municipality': input_municipality,
+            'DistrictEngineeringOffice': input_deo,
+            'TypeOfWork': input_typeofwork,
+            'ProvincialCapital': input_provcapital
+        }
+
+        # Engineer missing features
+        input_data_dict = engineer_features(raw_input_data, avg_duration_by_region, avg_duration_by_work_type)
+
+        # Convert to DataFrame
+        new_df = pd.DataFrame([input_data_dict])
+
+        # Ensure all numerical features are numeric type and handle NaN strings
+        for num_feat in numerical_features:
+            if num_feat in new_df.columns:
+                try:
+                    # Replace 'nan' strings with actual NaN
+                    if isinstance(new_df[num_feat].iloc[0], str):
+                        new_df[num_feat] = new_df[num_feat].replace('nan', pd.NA)
+                    new_df[num_feat] = pd.to_numeric(new_df[num_feat], errors='coerce')
+                except:
+                    pass
+
+        # Preprocess: Impute numerical features
+        new_df[numerical_features] = imputer_numeric.transform(new_df[numerical_features])
+
+        # Preprocess: One-hot encode categorical features
+        encoded_new_features = encoder.transform(new_df[categorical_features])
+        encoded_new_feature_names = encoder.get_feature_names_out(categorical_features)
+        encoded_new_df = pd.DataFrame(
+            encoded_new_features, 
+            columns=encoded_new_feature_names, 
+            index=new_df.index
+        )
+
+        # Combine numerical and encoded features
+        X_new = pd.concat([new_df[numerical_features], encoded_new_df], axis=1)
+
+        # Align columns with training data
+        missing_cols = set(all_training_features) - set(X_new.columns)
+        for col in missing_cols:
+            X_new[col] = 0
+
+        X_new = X_new[all_training_features]
+
+        # Make prediction
+        prediction = model.predict(X_new)
+        prediction_proba = model.predict_proba(X_new)
+
+        # Display results
+        st.markdown("## :material/task_alt: Prediction Results")
+
+        if prediction[0] == 1:
+            # On-time prediction
+            confidence = prediction_proba[0][1] * 100
+            st.markdown(f"""
+            <div class="result-card result-success">
+                <p class="result-title">ON TIME</p>
+                <p class="result-subtitle">Project will likely complete on schedule</p>
+                <p class="result-confidence"><strong>Confidence:</strong> {confidence:.1f}%</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Additional context
+            col_context_1, col_context_2 = st.columns(2)
+            with col_context_1:
+                st.success("✓ Project looks well-positioned for timely completion")
+            with col_context_2:
+                st.metric("Probability of On-Time Completion", f"{confidence:.1f}%")
+        else:
+            # Delayed prediction
+            confidence = prediction_proba[0][0] * 100
+            st.markdown(f"""
+            <div class="result-card result-delayed">
+                <p class="result-title">DELAYED</p>
+                <p class="result-subtitle">Project may face delays</p>
+                <p class="result-confidence"><strong>Confidence:</strong> {confidence:.1f}%</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Additional context
+            col_context_1, col_context_2 = st.columns(2)
+            with col_context_1:
+                st.warning("⚠ Project may experience delays - monitor closely")
+            with col_context_2:
+                st.metric("Probability of Delay", f"{confidence:.1f}%")
 
 
 # ============================================================================
