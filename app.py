@@ -450,6 +450,22 @@ def load_dark_mode_css():
         padding: 0.5rem !important;
     }
     
+    /* Radio button labels with custom font */
+    .stRadio label,
+    .stRadio label[data-testid="stRadioLabel"],
+    .stRadio span,
+    .stRadio > div > div > label,
+    .stRadio > div > div > span,
+    .stRadio * {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    /* Exclude radio input circles from font override */
+    .stRadio input[type="radio"] {
+        font-family: initial !important;
+    }
+    
     /* Download button styling */
     .stDownloadButton > button {
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
@@ -489,7 +505,7 @@ def load_dark_mode_css():
         border-radius: 0.5rem !important;
         background: rgba(168, 85, 247, 0.05) !important;
         padding: 2rem !important;
-        margin: 1.5rem 0 !important;
+        margin: 0.5rem 0 1.5rem 0 !important;
     }
     
     .stFileUploader > div {
@@ -631,6 +647,15 @@ def load_dark_mode_css():
     .stRadio label[data-testid="stRadioLabel"]:has(input:checked) {
         color: #a855f7 !important;
         font-weight: 600 !important;
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    /* Ensure all radio button text uses Inter font */
+    .stRadio input + span,
+    .stRadio input + label {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
     /* Container borders with gradient effect */
@@ -707,15 +732,12 @@ if selected_tab == "Single Project":
 if selected_tab == "Batch Upload":
     st.markdown("## :material/upload_file: Upload Project List")
     st.markdown("Upload a CSV file with project data to conduct predictions on multiple projects at once.")
-    st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
     
     uploaded_file = st.file_uploader(
         "Choose a CSV file",
         type="csv",
         help="CSV should contain columns matching the input features"
     )
-    
-    st.markdown("<br>", unsafe_allow_html=True)  # Add spacing after uploader
     
     if uploaded_file is not None:
         # Store that we're on batch upload tab
