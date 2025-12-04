@@ -193,25 +193,48 @@ def load_dark_mode_css():
         font-display: swap;
     }
     
-    /* Apply fonts globally */
-    * {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    /* Apply Inter font selectively to avoid breaking icons */
+    /* Set base font but preserve emoji rendering */
+    body, .stApp {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    body, html, .stApp, .main, [class*="st"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    /* Apply to text content, ensuring emoji fonts are available */
+    .stMarkdown p, .stMarkdown li, .stMarkdown td, .stMarkdown th,
+    .stText, .stCaption, .stSubheader {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    /* Headings with emoji support */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    code, pre, .stCodeBlock, .stMarkdownContainer code, [class*="code"], [class*="Code"] {
-        font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+    /* Form elements */
+    input[type="text"], input[type="number"], input[type="date"],
+    select, textarea, label {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    input, select, textarea, button, .stSelectbox, .stNumberInput, .stTextInput, .stDateInput {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    /* Streamlit widget text */
+    .stSelectbox label, .stNumberInput label, .stTextInput label, 
+    .stDateInput label, .stSelectbox [data-baseweb="select"] span,
+    .stNumberInput input, .stTextInput input {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    /* Apply JetBrains Mono to code */
+    code, pre, .stCodeBlock code {
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+    }
+    
+    /* Custom card text */
+    .info-card-text, .result-title, .result-subtitle, .result-confidence {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
     /* Info and Status Cards */
