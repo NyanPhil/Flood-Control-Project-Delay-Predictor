@@ -135,6 +135,27 @@ def load_dark_mode_css():
     """Apply dark mode CSS with developer-friendly colors."""
     css = """
     <style>
+    /* Import Material Icons */
+    @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+    
+    /* Material Icons styling */
+    .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+        vertical-align: middle;
+    }
+    
     /* Font Face Declarations - Using Streamlit static file serving */
     /* Streamlit serves files from the 'static' folder at the root */
     /* Using multiple path formats for compatibility */
@@ -708,8 +729,10 @@ st.markdown("""
     <img src="app/static/Dams.jpg" style="width: 100%; height: 350px; object-fit: cover; display: block;">
     <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(13, 17, 23, 0.75) 0%, rgba(13, 17, 23, 0.55) 100%); display: flex; align-items: center; justify-content: center;">
         <div style="text-align: center; color: white; padding: 2rem;">
-            <h1 style="font-size: 3.2rem; font-weight: 900; margin: 0; line-height: 1.2; text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8); background: linear-gradient(135deg, #a855f7 0%, #60a5fa 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                :material/timeline: DPWH Flood Control<br>Project Delay Predictor
+            <h1 style="font-size: 3.2rem; font-weight: 900; margin: 0; line-height: 1.2; text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);">
+                <span style="background: linear-gradient(135deg, #a855f7 0%, #60a5fa 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    <span class="material-icons" style="font-size: 3.2rem; vertical-align: middle; margin-right: 0.5rem; display: inline-block;">timeline</span>DPWH Flood Control<br>Project Delay Predictor
+                </span>
             </h1>
         </div>
     </div>
