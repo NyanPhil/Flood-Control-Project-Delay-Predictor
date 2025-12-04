@@ -704,14 +704,15 @@ all_training_features = numerical_features + encoded_feature_names_from_dummy
 
 # Header with Image and Title
 st.markdown("""
-<div style="position: relative; margin-bottom: 2rem; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);">
-    <img src="app/static/Dams.jpg" style="width: 100%; height: 300px; object-fit: cover; display: block;">
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(13, 17, 23, 0.7) 0%, rgba(13, 17, 23, 0.5) 100%); display: flex; align-items: center; justify-content: center;">
-        <div style="text-align: center; color: white;">
-            <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);">
-                ⏱️ DPWH Flood Control Project Delay Predictor
+<div style="position: relative; margin-bottom: 2rem; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 12px 40px rgba(168, 85, 247, 0.3);">
+    <img src="app/static/Dams.jpg" style="width: 100%; height: 350px; object-fit: cover; display: block;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(13, 17, 23, 0.75) 0%, rgba(13, 17, 23, 0.55) 100%); display: flex; align-items: center; justify-content: center;">
+        <div style="text-align: center; color: white; padding: 2rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 0.5rem; text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);">⏱️</div>
+            <h1 style="font-size: 3.2rem; font-weight: 900; margin: 0; line-height: 1.2; text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8); background: linear-gradient(135deg, #a855f7 0%, #60a5fa 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                DPWH Flood Control<br>Project Delay Predictor
             </h1>
-            <p style="font-size: 1.1rem; margin: 0.75rem 0 0 0; color: #e0e0e0; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);">
+            <p style="font-size: 1.25rem; margin: 1.25rem 0 0 0; color: #e0e0e0; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); font-weight: 500;">
                 Intelligent prediction system for project completion timelines
             </p>
         </div>
