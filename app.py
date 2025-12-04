@@ -135,6 +135,85 @@ def load_dark_mode_css():
     """Apply dark mode CSS with developer-friendly colors."""
     css = """
     <style>
+    /* Font Face Declarations - Using Streamlit static file serving */
+    /* Streamlit serves files from the 'static' folder at the root */
+    @font-face {
+        font-family: 'Inter';
+        src: url('/static/Inter_18pt-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    @font-face {
+        font-family: 'Inter';
+        src: url('/static/Inter_18pt-Medium.ttf') format('truetype');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    @font-face {
+        font-family: 'Inter';
+        src: url('/static/Inter_18pt-SemiBold.ttf') format('truetype');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    @font-face {
+        font-family: 'Inter';
+        src: url('/static/Inter_18pt-Bold.ttf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('/static/JetBrainsMono-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('/static/JetBrainsMono-Medium.ttf') format('truetype');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('/static/JetBrainsMono-Bold.ttf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    /* Apply fonts globally */
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    body, html, .stApp, .main, [class*="st"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    code, pre, .stCodeBlock, .stMarkdownContainer code, [class*="code"], [class*="Code"] {
+        font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+    }
+    
+    input, select, textarea, button, .stSelectbox, .stNumberInput, .stTextInput, .stDateInput {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
     /* Info and Status Cards */
     .info-card {
         background: linear-gradient(135deg, #1d2d3d 0%, #161b22 100%);
