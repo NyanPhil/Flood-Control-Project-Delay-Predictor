@@ -705,7 +705,7 @@ if selected_tab == "Single Project":
     st.session_state.batch_uploaded = False
 
 if selected_tab == "Batch Upload":
-    st.markdown("### :material/upload_file: Upload Project List")
+    st.markdown("## :material/upload_file: Upload Project List")
     st.markdown("Upload a CSV file with project data to conduct predictions on multiple projects at once.")
     st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
     
