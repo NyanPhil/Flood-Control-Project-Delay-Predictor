@@ -702,8 +702,24 @@ all_training_features = numerical_features + encoded_feature_names_from_dummy
 # PAGE LAYOUT & HEADER
 # ============================================================================
 
-# Title and Description
-st.markdown("# :material/timeline: DPWH Flood Control Project Delay Predictor")
+# Header with Image and Title
+st.markdown("""
+<div style="position: relative; margin-bottom: 2rem; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);">
+    <img src="app/static/Dams.jpg" style="width: 100%; height: 300px; object-fit: cover; display: block;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(13, 17, 23, 0.7) 0%, rgba(13, 17, 23, 0.5) 100%); display: flex; align-items: center; justify-content: center;">
+        <div style="text-align: center; color: white;">
+            <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);">
+                ⏱️ DPWH Flood Control Project Delay Predictor
+            </h1>
+            <p style="font-size: 1.1rem; margin: 0.75rem 0 0 0; color: #e0e0e0; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);">
+                Intelligent prediction system for project completion timelines
+            </p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Description Card
 st.markdown("""
 <div class="info-card">
     <p class="info-card-text">
