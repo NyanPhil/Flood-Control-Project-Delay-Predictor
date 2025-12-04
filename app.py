@@ -370,10 +370,37 @@ def load_dark_mode_css():
         box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2) !important;
     }
     
-    /* Colorful section containers */
+    /* Colorful section containers with better spacing */
     .stContainer {
         border-left: 3px solid rgba(168, 85, 247, 0.5) !important;
-        padding-left: 1rem !important;
+        padding: 1.5rem !important;
+        padding-left: 2rem !important;
+        margin: 1rem 0 !important;
+    }
+    
+    /* Better spacing for form sections */
+    [data-testid="stVerticalBlock"] {
+        gap: 1.5rem !important;
+    }
+    
+    /* Spacing for input groups */
+    .stNumberInput, .stTextInput, .stSelectbox, .stDateInput {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    /* Spacing for columns */
+    [data-testid="column"] {
+        padding: 0 1rem !important;
+    }
+    
+    /* Better spacing for markdown sections */
+    .stMarkdown {
+        margin: 1.5rem 0 !important;
+    }
+    
+    .stMarkdown p {
+        margin: 1rem 0 !important;
+        line-height: 1.6 !important;
     }
     
     /* Accent colors for section headers - using general h2 styling */
@@ -456,16 +483,63 @@ def load_dark_mode_css():
         background: rgba(168, 85, 247, 0.05) !important;
     }
     
-    /* File uploader styling */
+    /* File uploader styling with better spacing */
     .stFileUploader {
         border: 2px dashed rgba(168, 85, 247, 0.4) !important;
         border-radius: 0.5rem !important;
         background: rgba(168, 85, 247, 0.05) !important;
+        padding: 2rem !important;
+        margin: 1.5rem 0 !important;
+    }
+    
+    .stFileUploader > div {
+        padding: 1.5rem !important;
+    }
+    
+    .stFileUploader [data-testid="stFileUploaderDropzone"] {
+        padding: 3rem 2rem !important;
+        min-height: 150px !important;
+    }
+    
+    .stFileUploader [data-testid="stFileUploaderDropzoneInstructions"] {
+        padding: 1rem 0 !important;
+        margin: 1rem 0 !important;
+    }
+    
+    .stFileUploader [data-testid="stFileUploaderDropzoneInstructions"] > div {
+        margin: 0.75rem 0 !important;
+    }
+    
+    .stFileUploader button {
+        margin-top: 1.5rem !important;
+        padding: 0.75rem 1.5rem !important;
     }
     
     .stFileUploader:hover {
         border-color: rgba(168, 85, 247, 0.6) !important;
         background: rgba(168, 85, 247, 0.1) !important;
+    }
+    
+    /* File uploader label and help text spacing */
+    .stFileUploader label {
+        margin-bottom: 1rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+    
+    .stFileUploader [data-testid="stFileUploaderLabel"] {
+        margin-bottom: 1.5rem !important;
+        padding: 0.5rem 0 !important;
+    }
+    
+    /* Spacing for file uploader help icon */
+    .stFileUploader [data-testid="stTooltipIcon"] {
+        margin-left: 0.5rem !important;
+    }
+    
+    /* Better spacing for the drag and drop area content */
+    .stFileUploader [data-testid="stFileUploaderDropzoneInstructions"] p {
+        margin: 0.5rem 0 !important;
+        line-height: 1.8 !important;
     }
     
     /* Date input styling */
@@ -633,12 +707,15 @@ if selected_tab == "Single Project":
 if selected_tab == "Batch Upload":
     st.markdown("### :material/upload_file: Upload Project List")
     st.markdown("Upload a CSV file with project data to conduct predictions on multiple projects at once.")
+    st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
     
     uploaded_file = st.file_uploader(
         "Choose a CSV file",
         type="csv",
         help="CSV should contain columns matching the input features"
     )
+    
+    st.markdown("<br>", unsafe_allow_html=True)  # Add spacing after uploader
     
     if uploaded_file is not None:
         # Store that we're on batch upload tab
