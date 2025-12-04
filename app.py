@@ -137,9 +137,11 @@ def load_dark_mode_css():
     <style>
     /* Font Face Declarations - Using Streamlit static file serving */
     /* Streamlit serves files from the 'static' folder at the root */
+    /* Using multiple path formats for compatibility */
     @font-face {
         font-family: 'Inter';
-        src: url('/static/Inter_18pt-Regular.ttf') format('truetype');
+        src: url('/static/Inter_18pt-Regular.ttf') format('truetype'),
+             url('static/Inter_18pt-Regular.ttf') format('truetype');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
@@ -147,7 +149,8 @@ def load_dark_mode_css():
     
     @font-face {
         font-family: 'Inter';
-        src: url('/static/Inter_18pt-Medium.ttf') format('truetype');
+        src: url('/static/Inter_18pt-Medium.ttf') format('truetype'),
+             url('static/Inter_18pt-Medium.ttf') format('truetype');
         font-weight: 500;
         font-style: normal;
         font-display: swap;
@@ -155,7 +158,8 @@ def load_dark_mode_css():
     
     @font-face {
         font-family: 'Inter';
-        src: url('/static/Inter_18pt-SemiBold.ttf') format('truetype');
+        src: url('/static/Inter_18pt-SemiBold.ttf') format('truetype'),
+             url('static/Inter_18pt-SemiBold.ttf') format('truetype');
         font-weight: 600;
         font-style: normal;
         font-display: swap;
@@ -163,7 +167,8 @@ def load_dark_mode_css():
     
     @font-face {
         font-family: 'Inter';
-        src: url('/static/Inter_18pt-Bold.ttf') format('truetype');
+        src: url('/static/Inter_18pt-Bold.ttf') format('truetype'),
+             url('static/Inter_18pt-Bold.ttf') format('truetype');
         font-weight: 700;
         font-style: normal;
         font-display: swap;
@@ -171,7 +176,8 @@ def load_dark_mode_css():
     
     @font-face {
         font-family: 'JetBrains Mono';
-        src: url('/static/JetBrainsMono-Regular.ttf') format('truetype');
+        src: url('/static/JetBrainsMono-Regular.ttf') format('truetype'),
+             url('static/JetBrainsMono-Regular.ttf') format('truetype');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
@@ -179,7 +185,8 @@ def load_dark_mode_css():
     
     @font-face {
         font-family: 'JetBrains Mono';
-        src: url('/static/JetBrainsMono-Medium.ttf') format('truetype');
+        src: url('/static/JetBrainsMono-Medium.ttf') format('truetype'),
+             url('static/JetBrainsMono-Medium.ttf') format('truetype');
         font-weight: 500;
         font-style: normal;
         font-display: swap;
@@ -187,55 +194,68 @@ def load_dark_mode_css():
     
     @font-face {
         font-family: 'JetBrains Mono';
-        src: url('/static/JetBrainsMono-Bold.ttf') format('truetype');
+        src: url('/static/JetBrainsMono-Bold.ttf') format('truetype'),
+             url('static/JetBrainsMono-Bold.ttf') format('truetype');
         font-weight: 700;
         font-style: normal;
         font-display: swap;
     }
     
-    /* Apply Inter font selectively to avoid breaking icons */
-    /* Set base font but preserve emoji rendering */
-    body, .stApp {
+    /* Apply Inter font with !important to override Streamlit defaults */
+    /* Emoji fonts in fallback ensure icons render correctly */
+    body, .stApp, .main {
         font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 
-                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
-    /* Apply to text content, ensuring emoji fonts are available */
-    .stMarkdown p, .stMarkdown li, .stMarkdown td, .stMarkdown th,
-    .stText, .stCaption, .stSubheader {
+    /* Apply to all text content */
+    .stMarkdown, .stMarkdown p, .stMarkdown li, .stMarkdown td, .stMarkdown th,
+    .stMarkdown div, .stText, .stCaption, .stSubheader, .stHeader {
         font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
     /* Headings with emoji support */
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
+    .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
         font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
     /* Form elements */
     input[type="text"], input[type="number"], input[type="date"],
     select, textarea, label {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
     /* Streamlit widget text */
-    .stSelectbox label, .stNumberInput label, .stTextInput label, 
-    .stDateInput label, .stSelectbox [data-baseweb="select"] span,
+    .stSelectbox, .stSelectbox label, .stNumberInput, .stNumberInput label, 
+    .stTextInput, .stTextInput label, .stDateInput, .stDateInput label,
+    .stSelectbox [data-baseweb="select"], .stSelectbox [data-baseweb="select"] span,
     .stNumberInput input, .stTextInput input {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    /* Buttons */
+    button, .stButton button {
+        font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
     /* Apply JetBrains Mono to code */
-    code, pre, .stCodeBlock code {
-        font-family: 'JetBrains Mono', 'Courier New', monospace;
+    code, pre, .stCodeBlock, .stCodeBlock code, .stMarkdownContainer code {
+        font-family: 'JetBrains Mono', 'Courier New', monospace !important;
     }
     
     /* Custom card text */
-    .info-card-text, .result-title, .result-subtitle, .result-confidence {
+    .info-card, .info-card-text, .result-card, .result-title, 
+    .result-subtitle, .result-confidence {
         font-family: 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                     'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
+    
+    /* Ensure emoji characters use emoji fonts (they will automatically due to font fallback) */
+    /* The emoji fonts in the fallback chain will handle emoji/icon rendering */
     
     /* Info and Status Cards */
     .info-card {
