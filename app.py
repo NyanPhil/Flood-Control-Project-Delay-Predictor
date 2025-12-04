@@ -261,10 +261,13 @@ def load_dark_mode_css():
     .info-card {
         background: linear-gradient(135deg, #1d2d3d 0%, #161b22 100%);
         border-left: 4px solid #a855f7;
+        border-top: 1px solid rgba(168, 85, 247, 0.3);
+        border-right: 1px solid rgba(168, 85, 247, 0.2);
+        border-bottom: 1px solid rgba(168, 85, 247, 0.2);
         padding: 1.5rem;
         border-radius: 0.5rem;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2), 0 0 20px rgba(168, 85, 247, 0.1);
     }
     
     .info-card-text {
@@ -287,13 +290,19 @@ def load_dark_mode_css():
     .result-success {
         background: linear-gradient(135deg, #1a3a2a 0%, #0d1917 100%);
         border-left: 4px solid #3fb950;
-        border-color: #30363d;
+        border-top: 1px solid rgba(63, 185, 80, 0.3);
+        border-right: 1px solid rgba(63, 185, 80, 0.2);
+        border-bottom: 1px solid rgba(63, 185, 80, 0.2);
+        box-shadow: 0 8px 24px rgba(63, 185, 80, 0.2), 0 0 30px rgba(63, 185, 80, 0.1);
     }
     
     .result-delayed {
         background: linear-gradient(135deg, #3a1a1a 0%, #1a0d0d 100%);
         border-left: 4px solid #f85149;
-        border-color: #30363d;
+        border-top: 1px solid rgba(248, 81, 73, 0.3);
+        border-right: 1px solid rgba(248, 81, 73, 0.2);
+        border-bottom: 1px solid rgba(248, 81, 73, 0.2);
+        box-shadow: 0 8px 24px rgba(248, 81, 73, 0.2), 0 0 30px rgba(248, 81, 73, 0.1);
     }
     
     .result-title {
@@ -322,6 +331,237 @@ def load_dark_mode_css():
         margin-top: 2rem;
         margin-bottom: 1rem;
         font-size: 1.2rem;
+    }
+    
+    /* Colorful accents for Streamlit containers */
+    [data-testid="stVerticalBlock"] > [style*="border"] {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+    }
+    
+    /* Enhanced button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 0.5rem !important;
+        padding: 0.75rem 2rem !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4) !important;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%) !important;
+        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* Colorful input field accents */
+    .stNumberInput > div > div > input,
+    .stTextInput > div > div > input,
+    .stSelectbox > div > div {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+    }
+    
+    .stNumberInput > div > div > input:focus,
+    .stTextInput > div > div > input:focus,
+    .stSelectbox > div > div:focus-within {
+        border-color: #a855f7 !important;
+        box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2) !important;
+    }
+    
+    /* Colorful section containers */
+    .stContainer {
+        border-left: 3px solid rgba(168, 85, 247, 0.5) !important;
+        padding-left: 1rem !important;
+    }
+    
+    /* Accent colors for section headers - using general h2 styling */
+    h2 {
+        border-bottom: 2px solid rgba(168, 85, 247, 0.3) !important;
+        padding-bottom: 0.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Colorful markdown headers */
+    .stMarkdown h2 {
+        color: #a855f7 !important;
+        border-bottom: 2px solid rgba(168, 85, 247, 0.4) !important;
+    }
+    
+    .stMarkdown h3 {
+        color: #60a5fa !important;
+    }
+    
+    /* Colorful metric displays */
+    [data-testid="stMetricValue"] {
+        color: #a855f7 !important;
+        font-weight: 700 !important;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: #8b949e !important;
+    }
+    
+    /* Success and warning messages with colors */
+    .stSuccess {
+        background: linear-gradient(135deg, rgba(63, 185, 80, 0.1) 0%, rgba(63, 185, 80, 0.05) 100%) !important;
+        border-left: 4px solid #3fb950 !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    .stWarning {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%) !important;
+        border-left: 4px solid #f59e0b !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    /* Colorful tabs/radio buttons */
+    .stRadio > div {
+        background: rgba(168, 85, 247, 0.1) !important;
+        border-radius: 0.5rem !important;
+        padding: 0.5rem !important;
+    }
+    
+    /* Download button styling */
+    .stDownloadButton > button {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+    }
+    
+    .stDownloadButton > button:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6) !important;
+    }
+    
+    /* Colorful dataframe styling */
+    .stDataFrame {
+        border: 1px solid rgba(168, 85, 247, 0.3) !important;
+        border-radius: 0.5rem !important;
+        overflow: hidden !important;
+    }
+    
+    /* Table header accents */
+    table thead th {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%) !important;
+        color: #a855f7 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Alternating row colors with subtle accent */
+    table tbody tr:nth-child(even) {
+        background: rgba(168, 85, 247, 0.05) !important;
+    }
+    
+    /* File uploader styling */
+    .stFileUploader {
+        border: 2px dashed rgba(168, 85, 247, 0.4) !important;
+        border-radius: 0.5rem !important;
+        background: rgba(168, 85, 247, 0.05) !important;
+    }
+    
+    .stFileUploader:hover {
+        border-color: rgba(168, 85, 247, 0.6) !important;
+        background: rgba(168, 85, 247, 0.1) !important;
+    }
+    
+    /* Date input styling */
+    .stDateInput > div > div {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+    }
+    
+    .stDateInput > div > div:focus-within {
+        border-color: #a855f7 !important;
+        box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2) !important;
+    }
+    
+    /* Caption and subheader colors */
+    .stCaption {
+        color: #8b949e !important;
+    }
+    
+    /* Divider with accent color */
+    hr {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+        margin: 2rem 0 !important;
+    }
+    
+    /* Info box accent */
+    [data-testid="stInfo"] {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%) !important;
+        border-left: 4px solid #3b82f6 !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    /* Error message styling */
+    .stError {
+        background: linear-gradient(135deg, rgba(248, 81, 73, 0.1) 0%, rgba(248, 81, 73, 0.05) 100%) !important;
+        border-left: 4px solid #f85149 !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    /* Main title styling with gradient */
+    h1, .stMarkdown h1 {
+        background: linear-gradient(135deg, #a855f7 0%, #60a5fa 50%, #34d399 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        font-weight: 800 !important;
+        margin-bottom: 1rem !important;
+        display: inline-block !important;
+    }
+    
+    /* Fallback for browsers that don't support text gradient */
+    @supports not (-webkit-background-clip: text) {
+        h1, .stMarkdown h1 {
+            color: #a855f7 !important;
+            -webkit-text-fill-color: #a855f7 !important;
+        }
+    }
+    
+    /* Sidebar accent */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #161b22 0%, #0d1117 100%) !important;
+        border-right: 2px solid rgba(168, 85, 247, 0.3) !important;
+    }
+    
+    /* Main content area subtle accent */
+    .main .block-container {
+        background: linear-gradient(180deg, transparent 0%, rgba(168, 85, 247, 0.02) 100%) !important;
+    }
+    
+    /* Selectbox dropdown accent */
+    [data-baseweb="select"] {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+    }
+    
+    [data-baseweb="select"]:hover {
+        border-color: rgba(168, 85, 247, 0.5) !important;
+    }
+    
+    /* Number input spinner accent */
+    .stNumberInput button {
+        color: #a855f7 !important;
+        border-color: rgba(168, 85, 247, 0.3) !important;
+    }
+    
+    .stNumberInput button:hover {
+        background: rgba(168, 85, 247, 0.1) !important;
+        border-color: #a855f7 !important;
+    }
+    
+    /* Radio button selected state */
+    .stRadio label[data-testid="stRadioLabel"]:has(input:checked) {
+        color: #a855f7 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Container borders with gradient effect */
+    [data-testid="stVerticalBlock"] > [style*="border"] {
+        border-image: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(96, 165, 250, 0.3)) 1 !important;
     }
     </style>
     """
